@@ -27,17 +27,16 @@ public class TCPClient {
 					var sockReader = new BufferedReader(sockInputStreamReader);
 					var sockOutputStream = socket.getOutputStream();
 					var sockOutputStreamWriter = new OutputStreamWriter(sockOutputStream);
-					var sockWriter = new BufferedWriter(sockOutputStreamWriter);
-					) {
+					var sockWriter = new BufferedWriter(sockOutputStreamWriter);) {
 				// 標準入力から読み込む
 				System.out.print("メッセージ：");
 				var msg = consoleReader.readLine();
-				
+
 				// 送信する
 				sockWriter.write(msg);
 				sockWriter.newLine();
 				sockWriter.flush();
-				
+
 				// 結果を受信する
 				var res = sockReader.readLine();
 				System.out.println("結果を受け取りました:" + res);
@@ -46,8 +45,7 @@ public class TCPClient {
 				socket.shutdownInput();
 				socket.shutdownOutput();
 			}
-			
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
