@@ -1,11 +1,6 @@
 package jp.co.nssys.spot.network;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.Socket;
 
 /**
  * TCP通信におけるクライアントクラスです。
@@ -17,45 +12,18 @@ public class TCPClient {
 	 * @param args
 	 */
 	public static void main(String[] args) throws IOException {
-		// ソケットの作成
-		try (var socket = new Socket("localhost", 8080)) {
-			try (
-					var consoleStreamReader = new InputStreamReader(System.in);
-					var consoleReader = new BufferedReader(consoleStreamReader);
-					var sockInputStream = socket.getInputStream();
-					var sockInputStreamReader = new InputStreamReader(sockInputStream);
-					var sockReader = new BufferedReader(sockInputStreamReader);
-					var sockOutputStream = socket.getOutputStream();
-					var sockOutputStreamWriter = new OutputStreamWriter(sockOutputStream);
-					var sockWriter = new BufferedWriter(sockOutputStreamWriter);) {
-				
-				while (true) {					
-					// 標準入力から読み込む
-					System.out.println("メッセージの送信をやめる場合はエンターを入力してください。");
-					System.out.print("メッセージ：");
-					var msg = consoleReader.readLine();
-					if (msg == null || msg.isEmpty()) {
-						break;
-					}
+		// TODO: ソケットの作成
+		
+		// TODO: 送信メッセージの作成
+		
+		// TODO: メッセージの送信（=ソケットの出力ストリームに対して書き込み）
+		
+		// TODO: メッセージの受信（=ソケットの入力ストリームから読み込み）
+		
+		// TODO: ソケットの入力と出力をシャットダウン
+		
+		// TODO: ソケットのクローズ
 
-					// 送信する
-					sockWriter.write(msg);
-					sockWriter.newLine();
-					sockWriter.flush();
-
-					// 結果を受信する
-					var res = sockReader.readLine();
-					System.out.println("結果を受け取りました:" + res);
-				}
-
-				// シャットダウン
-				System.out.println("メッセージの送信を終了します。");
-				socket.shutdownInput();
-				socket.shutdownOutput();
-			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		// FIXME: 繰り返し送信しては受信ができるプログラムができるといいですね。
 	}
 }
