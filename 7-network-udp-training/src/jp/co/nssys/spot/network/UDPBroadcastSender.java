@@ -42,6 +42,7 @@ public class UDPBroadcastSender {
 				
 				// 送信する
 				try (DatagramSocket socket = new DatagramSocket()) {
+					socket.setBroadcast(true);	// ブロードキャストモードをON
 					socket.send(packet);
 					System.out.println(packet.getAddress() + ":" + packet.getPort() + "にデータを送信しました。");
 				}
