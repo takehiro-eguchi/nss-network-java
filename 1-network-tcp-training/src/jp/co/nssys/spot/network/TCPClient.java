@@ -37,17 +37,10 @@ public class TCPClient {
 				sockWriter.newLine();
 				sockWriter.flush();
 
-				// 結果を受信する
-				var res = sockReader.readLine();
-				System.out.println("結果を受け取りました:" + res);
-
 				// シャットダウン
 				socket.shutdownInput();
 				socket.shutdownOutput();
 			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 }

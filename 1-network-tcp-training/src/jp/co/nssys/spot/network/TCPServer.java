@@ -35,15 +35,11 @@ public class TCPServer {
 						var outputStream = acceptedSocket.getOutputStream();
 						var outputStreamWriter = new OutputStreamWriter(outputStream);
 						var writer = new BufferedWriter(outputStreamWriter);) {
+					
 					// メッセージを受信しては出力する
 					var line = reader.readLine();
 					System.out.println("受信メッセージ：" + line);
 					
-					// 受信したことの返信
-					writer.write("メッセージを受信しました。");
-					writer.newLine();
-					writer.flush();
-
 					// シャットダウン
 					acceptedSocket.shutdownInput();
 					acceptedSocket.shutdownOutput();
