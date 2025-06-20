@@ -17,7 +17,12 @@ public class HttpResponseWriter implements Closeable {
 	public static record ResponseLine(String version, int statusCode, String reasonPhrase) { }
 	
 	/** HTTPレスポンス */
-	public static record HttpResponse(ResponseLine responseLine, HttpHeaders headers, byte[] body) { }
+	public static record HttpResponse(ResponseLine responseLine, HttpHeaders headers, byte[] body) {
+		// レスポンスボディの内容を取得します。
+		public String getContent() {
+			return body != null ? new String(body) : "";
+		}
+	}
 
 	private final Socket socket;
 	private final OutputStream outputStream;
@@ -52,6 +57,9 @@ public class HttpResponseWriter implements Closeable {
 			throw new IllegalArgumentException("HttpResponse must not be null");
 		}
 		
+		// 出力
+		printResponse(response);
+		
 		// レスポンス行の書き込み
 		var responseLine = response.responseLine();
 		bufferedWriter.write(String.format(
@@ -65,9 +73,8 @@ public class HttpResponseWriter implements Closeable {
 					String.format("%s: %s", header.name(), header.value()));
 			bufferedWriter.newLine();
 		}
-		
-		// ヘッダーの終端
 		bufferedWriter.newLine();
+		bufferedWriter.flush();
 		
 		// ボディの書き込み
 		if (response.body() != null && response.body().length > 0) {
@@ -76,6 +83,22 @@ public class HttpResponseWriter implements Closeable {
 		}
 		
 		bufferedWriter.flush();
+	}
+
+	// HTTPレスポンスの内容を出力します。
+	private void printResponse(HttpResponse response) {
+		System.out.println("---------- START HTTPレスポンス ----------");
+		var responseLine = response.responseLine();
+		System.out.println(String.format(
+				"%s %d %s", 
+				responseLine.version(), responseLine.statusCode(), responseLine.reasonPhrase()));
+		var headers = response.headers();
+		for (var header : headers.getHeaders()) {
+			System.out.println(String.format("%s: %s", header.name(), header.value()));
+		}
+		System.out.println();
+		System.out.println(response.getContent());
+		System.out.println("---------- END HTTPレスポンス ----------");
 	}
 
 	@Override

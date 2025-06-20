@@ -23,6 +23,7 @@ public class HttpRequestReader implements Closeable {
 	public static class HttpHeaders {
 		// 定数
 		public static final String CONTENT_LENGTH = "Content-Length";
+		public static final String CONTENT_TYPE = "Content-Type";
 		
 		// ヘッダーのリスト
 		private final Map<String, HttpHeader> headers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -60,7 +61,12 @@ public class HttpRequestReader implements Closeable {
 	public static record ResponseLine(String version, int statusCode, String reasonPhrase) { }
 
 	/** HTTPリクエスト */
-	public static record HttpRequest(RequestLine requestLine, HttpHeaders headers, byte[] body) {}
+	public static record HttpRequest(RequestLine requestLine, HttpHeaders headers, byte[] body) {
+		// 内容をテキストとして取得します
+		public String getContent() {
+			return new String(body);
+		}
+	}
 	
 	private final Socket socket;
 	private final InputStream inputStream;
@@ -93,6 +99,9 @@ public class HttpRequestReader implements Closeable {
 	public HttpRequest read() throws IOException {
 		// リクエスト行を読み取る
 		String firstLine = bufferedReader.readLine();
+		if (firstLine == null) {
+			return null; // コンテンツが空か終了している場合はnullを返す
+		}
 		RequestLine requestLine = readRequestLine(firstLine);
 		
 		// ヘッダーを読み取る
@@ -104,7 +113,23 @@ public class HttpRequestReader implements Closeable {
 		byte[] body = readBody(contentLength);
 		
 		// HttpRequestオブジェクトを生成して返す
-		return new HttpRequest(requestLine, headers, body);
+		var request = new HttpRequest(requestLine, headers, body);
+		printRequest(request);
+		return request;
+	}
+
+	// リクエストの内容をコンソールに出力するメソッド
+	private void printRequest(HttpRequest request) {
+		System.out.println("---------- START HTTPリクエスト ----------");
+		var requestLine = request.requestLine();
+		System.out.println(String.join(" ", requestLine.method(), requestLine.uri(), requestLine.version()));
+		var headers = request.headers();
+		for (var header : headers.getHeaders()) {
+			System.out.println(String.format("%s: %s", header.name(), header.value()));
+		}
+		System.out.println();
+		System.out.println(request.getContent());
+		System.out.println("---------- END HTTPリクエスト ----------");
 	}
 
 	// ボディを読み取るメソッド

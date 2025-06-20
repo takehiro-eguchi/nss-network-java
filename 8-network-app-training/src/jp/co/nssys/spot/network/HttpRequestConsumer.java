@@ -20,6 +20,22 @@ public class HttpRequestConsumer {
 		}
 
 		// レスポンスを返す
-		return null; // ここではnullを返していますが、実際には適切なレスポンスを生成して返す必要があります。
+		return build(request);
+	}
+
+	// HTTPレスポンスを生成します。
+	private HttpResponse build(HttpRequest request) {
+		// レスポンス行を生成
+		var responseLine = new HttpResponseWriter.ResponseLine("HTTP/1.1", 200, "OK");
+		// ヘッダーを生成
+		var headers = new HttpRequestReader.HttpHeaders();
+		headers.addHeader(
+				HttpRequestReader.HttpHeaders.CONTENT_TYPE, "application/json; charset=UTF-8");
+		// ボディを生成
+		String bodyContent = "{  \"message\": \"Hello, World!\" }";
+		byte[] body = bodyContent.getBytes();
+		headers.addHeader(
+				HttpRequestReader.HttpHeaders.CONTENT_LENGTH, String.valueOf(body.length));
+		return new HttpResponse(responseLine, headers, body);
 	}
 }

@@ -29,15 +29,21 @@ public class HttpServer {
 		
 		// 受信を開始する
 		try (var serverSocket = new ServerSocket(port, backlog)) {
-			// リクエストを受け付ける
-			final var acceptedSocket = serverSocket.accept();
-			
-			// 受付後はスレッドプールで処理
-			executor.execute(() -> handleSocket(acceptedSocket));
-			
+			System.out.println("HTTPサーバーがポート " + port + " で起動しました。");
+			while (!serverSocket.isClosed()) {
+				// リクエストを受け付ける
+				final var acceptedSocket = serverSocket.accept();
+				
+				// 受付後はスレッドプールで処理
+				executor.execute(() -> handleSocket(acceptedSocket));
+			}
 		} catch (IOException e) {
 			throw new RuntimeException("HTTPサーバーの送受信に失敗しました。ポート: " + port, e);
-		} 
+		} finally {
+			// スレッドプールをシャットダウン
+			executor.shutdown();
+			System.out.println("HTTPサーバーをシャットダウンしました。");
+		}
 	}
 		
 	// 受付ソケットの処理を行います。
@@ -48,6 +54,9 @@ public class HttpServer {
 			
 			// リクエストを読み込む
 			var request = reader.read();
+			if (request == null) {
+				return; // リクエストがnullの場合は処理を終了
+			}
 			
 			// リクエストに基づいてレスポンスを生成する
 			var consumer = new HttpRequestConsumer();
@@ -58,6 +67,6 @@ public class HttpServer {
 			
 		} catch (IOException e) {
 			throw new RuntimeException("HTTPサーバーのソケット処理に失敗しました。", e);
-		}
+		} 
 	}
 }
