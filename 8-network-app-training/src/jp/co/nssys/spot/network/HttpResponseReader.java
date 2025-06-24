@@ -1,6 +1,7 @@
 package jp.co.nssys.spot.network;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,8 +46,8 @@ public class HttpResponseReader implements Closeable {
 		// ヘッダーを読み取る
 		var headers = readHeaders();
 		
-		// ボディを読み取る
-		byte[] body = inputStream.readAllBytes();
+		// 残りのデータを読み取る
+		byte[] body = readBody();
 		
 		return new HttpResponse(responseLine, headers, body);
 	}
@@ -89,6 +90,20 @@ public class HttpResponseReader implements Closeable {
 			}
 		}
 		return headers;
+	}
+	
+	/** レスポンスボディを読み込みます  */
+	private byte[] readBody() throws IOException {
+		ByteArrayOutputStream bytesOutputStream = new ByteArrayOutputStream();
+		char[] buf = new char[1024];
+		int bytesRead;
+		while ((bytesRead = bufferedReader.read(buf)) != -1) {
+			// char配列からバイト配列に変換
+			byte[] byteBuf = new String(buf, 0, bytesRead).getBytes();
+			// 読み取ったデータを書き込む
+			bytesOutputStream.write(byteBuf);
+		}
+		return bytesOutputStream.toByteArray();
 	}
 
 	@Override

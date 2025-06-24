@@ -39,6 +39,7 @@ public class HttpRequestConsumer {
 			
 			// レスポンスデータを補正する
 			return build(response);
+			
 		} catch (FileNotFoundException | NoSuchFileException e) {
 			// ファイルが見つからない場合は404 Not Foundを返す
 			return HttpResponse.notFound(e.getMessage());
