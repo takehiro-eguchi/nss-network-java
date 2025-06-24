@@ -7,22 +7,12 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
-import jp.co.nssys.spot.network.HttpRequestReader.HttpHeaders;
+import jp.co.nssys.spot.network.entity.HttpResponse;
 
 /**
  * HTTPレスポンスの書き込みを行います。
  */
 public class HttpResponseWriter implements Closeable {
-	/** レスポンス行 */
-	public static record ResponseLine(String version, int statusCode, String reasonPhrase) { }
-	
-	/** HTTPレスポンス */
-	public static record HttpResponse(ResponseLine responseLine, HttpHeaders headers, byte[] body) {
-		// レスポンスボディの内容を取得します。
-		public String getContent() {
-			return body != null ? new String(body) : "";
-		}
-	}
 
 	private final Socket socket;
 	private final OutputStream outputStream;
@@ -68,7 +58,7 @@ public class HttpResponseWriter implements Closeable {
 		bufferedWriter.newLine();
 		
 		// ヘッダーの書き込み
-		for (var header : response.headers.getHeaders()) {
+		for (var header : response.headers().getHeaders()) {
 			bufferedWriter.write(
 					String.format("%s: %s", header.name(), header.value()));
 			bufferedWriter.newLine();

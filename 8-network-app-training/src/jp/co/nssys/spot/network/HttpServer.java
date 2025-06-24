@@ -65,7 +65,7 @@ public class HttpServer {
 			// レスポンスを書き込む
 			writer.writeResponse(response);
 			
-		} catch (IOException e) {
+		} catch (Exception e) {
 			throw new RuntimeException("HTTPサーバーのソケット処理に失敗しました。", e);
 		} 
 	}

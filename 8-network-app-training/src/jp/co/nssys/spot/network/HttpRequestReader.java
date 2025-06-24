@@ -6,67 +6,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+
+import jp.co.nssys.spot.network.entity.HttpHeaders;
+import jp.co.nssys.spot.network.entity.HttpRequest;
+import jp.co.nssys.spot.network.entity.HttpRequestLine;
 
 /**
  * HTTPリクエストの内容を読み取るクラスです。
  */
 public class HttpRequestReader implements Closeable {
-
-	/** リクエスト行 */
-	public static record RequestLine(String method, String uri, String version) {  }
-
-	/** HTTPヘッダー */
-	public static record HttpHeader(String name, String value) { }
-	public static class HttpHeaders {
-		// 定数
-		public static final String CONTENT_LENGTH = "Content-Length";
-		public static final String CONTENT_TYPE = "Content-Type";
-		
-		// ヘッダーのリスト
-		private final Map<String, HttpHeader> headers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-
-		/** ヘッダーを追加します。 */
-		public void addHeader(String name, String value) {
-			String trimmedName = name.trim();
-			headers.put(trimmedName, new HttpHeader(trimmedName, value.trim()));
-		}
-
-		/** ヘッダーを取得します。 */
-		public List<HttpHeader> getHeaders() {
-			return headers.values().stream().toList();
-		}
-		
-		public HttpHeader getHeader(String name) {
-			return headers.get(name);
-		}
-		
-		// Content-Lengthヘッダーを取得します。
-		public Long getContentLength() {
-			HttpHeader header = headers.get(CONTENT_LENGTH);
-			if (header != null) {
-				try {
-					return Long.parseLong(header.value());
-				} catch (NumberFormatException e) {
-					throw new IllegalArgumentException("Content-Lengthヘッダーの値が不正です: " + header.value(), e);
-				}
-			}
-			return null; // Content-Lengthヘッダーが存在しない場合はnullを返す
-		}
-	}
-	
-	/** レスポンス行 */
-	public static record ResponseLine(String version, int statusCode, String reasonPhrase) { }
-
-	/** HTTPリクエスト */
-	public static record HttpRequest(RequestLine requestLine, HttpHeaders headers, byte[] body) {
-		// 内容をテキストとして取得します
-		public String getContent() {
-			return new String(body);
-		}
-	}
 	
 	private final Socket socket;
 	private final InputStream inputStream;
@@ -102,10 +50,10 @@ public class HttpRequestReader implements Closeable {
 		if (firstLine == null) {
 			return null; // コンテンツが空か終了している場合はnullを返す
 		}
-		RequestLine requestLine = readRequestLine(firstLine);
+		var requestLine = readRequestLine(firstLine);
 		
 		// ヘッダーを読み取る
-		HttpHeaders headers = readHeaders();
+		var headers = readHeaders();
 		// Content-Lengthヘッダーを取得する
 		Long contentLength = headers.getContentLength();
 		
@@ -172,7 +120,7 @@ public class HttpRequestReader implements Closeable {
 	}
 
 	// リクエスト行を解析するメソッド
-	private RequestLine readRequestLine(String line) {
+	private HttpRequestLine readRequestLine(String line) {
 		// 空白で分解
 		String[] parts = line.split(" ");
 		if (parts.length != 3) {
@@ -183,7 +131,7 @@ public class HttpRequestReader implements Closeable {
 		String method = parts[0];
 		String uri = parts[1];
 		String version = parts[2];
-		return new RequestLine(method, uri, version);
+		return new HttpRequestLine(method, uri, version);
 	}
 
 	@Override
