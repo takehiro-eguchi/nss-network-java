@@ -35,8 +35,8 @@ public class HttpRequestConsumer {
 				throw new IllegalArgumentException("HttpRequest must not be null");
 			}
 			
-			// リソースパスより対象ファイルを読み込み
 			try {
+				// リソースパスより対象ファイルを読み込み
 				var response = readResponse(request);
 				
 				// レスポンスデータを補正する
@@ -49,6 +49,7 @@ public class HttpRequestConsumer {
 			} 
 		} catch (Exception e) {
 			// その他の例外は500 Internal Server Errorを返す
+			e.printStackTrace();
 			var errorResponse = readResponse(ERROR_PATH, "500");
 			return build(errorResponse);
 		}
