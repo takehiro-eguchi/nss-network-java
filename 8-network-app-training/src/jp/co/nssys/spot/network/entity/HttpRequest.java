@@ -6,4 +6,14 @@ public record HttpRequest(HttpRequestLine requestLine, HttpHeaders headers, byte
 	public String getContent() {
 		return new String(body);
 	}
+	
+	/** メソッドがGETかどうかを判定します */
+	public boolean isGet() {
+		return requestLine.isGet();
+	}
+	
+	/** メソッドがPOSTかどうかを判定します */
+	public boolean isPost() {
+		return requestLine.isPost();
+	}
 }

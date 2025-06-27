@@ -86,16 +86,23 @@ public class HttpRequestReader implements Closeable {
 			return new byte[0]; // Content-Lengthがないか0の場合は空のボディを返す
 		}
 		try {
-			byte[] body = new byte[contentLength.intValue()];
+			char[] buf = new char[contentLength.intValue()];
 			int bytesRead = 0;
 			while (bytesRead < contentLength) {
-				int result = inputStream.read(body, bytesRead, (int)(contentLength - bytesRead));
+				int result = bufferedReader.read(buf, bytesRead, (int)(contentLength - bytesRead));
 				if (result == -1) {
 					throw new IOException("ボディの読み取り中に接続が切断されました。");
 				}
 				bytesRead += result;
 			}
+			
+			// char配列をbyte配列に変換
+			byte[] body = new byte[bytesRead];
+			for (int i = 0; i < bytesRead; i++) {
+				body[i] = (byte) buf[i];
+			}
 			return body;
+			
 		} catch (IOException e) {
 			throw new RuntimeException("ボディの読み取りに失敗しました。", e);
 		}

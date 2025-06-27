@@ -6,6 +6,9 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
+import java.util.Map;
 
 import jp.co.nssys.spot.network.entity.HttpHeaders;
 import jp.co.nssys.spot.network.entity.HttpResponse;
@@ -40,6 +43,16 @@ public class HttpResponseReader implements Closeable {
 	 * @throws IOException 入出力エラーが発生した場合
 	 */
 	public HttpResponse read() throws IOException {
+		return read(null);
+	}
+	
+	/**
+	 * HTTPレスポンスを読み取ります。
+	 * @param params 埋め込み変数
+	 * @return 読み取ったHTTPレスポンス
+	 * @throws IOException 入出力エラーが発生した場合
+	 */
+	public HttpResponse read(Map<String, String> params) throws IOException {
 		// レスポンス行を読み取る
 		var responseLine = readResponseLine();
 		
@@ -49,6 +62,20 @@ public class HttpResponseReader implements Closeable {
 		// 残りのデータを読み取る
 		byte[] body = readBody();
 		
+		// パラメータが指定されている場合は、ボディの内容を置換
+		if (params != null && !params.isEmpty()) {
+			String bodyString = new String(body);
+			for (Map.Entry<String, String> entry : params.entrySet()) {
+				var key = entry.getKey();
+				var value = entry.getValue();
+				// valueはURLデコードする
+				value = URLDecoder.decode(value, Charset.defaultCharset());
+				bodyString = bodyString.replaceAll("\\$\\{" + key + "\\}", value);
+			}
+			body = bodyString.getBytes();
+		}
+		
+		// レスポンスを作成
 		return new HttpResponse(responseLine, headers, body);
 	}
 

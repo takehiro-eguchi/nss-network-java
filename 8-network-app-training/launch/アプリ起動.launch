@@ -14,5 +14,4 @@
     <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="jp.co.nssys.spot.network.HttpServer"/>
     <stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="8-network-app-training"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="8-network-app-training"/>
-    <booleanAttribute key="org.eclipse.jdt.launching.STOP_IN_MAIN" value="true"/>
 </launchConfiguration>

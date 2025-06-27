@@ -33,6 +33,8 @@ public class HttpServer {
 		var consumer = new HttpRequestConsumer();
 		// 独自にサーブレットを登録する場合は、パスとサーブレットをマッピングする
 		consumer.addServlet("/xml", new SampleXmlServlet());
+		consumer.addServlet("/ex4", new GzipContentServlet());
+		consumer.addServlet("/ex6-2", new PostContentServlet());
 		
 		// 受信を開始する
 		try (var serverSocket = new ServerSocket(port, backlog)) {

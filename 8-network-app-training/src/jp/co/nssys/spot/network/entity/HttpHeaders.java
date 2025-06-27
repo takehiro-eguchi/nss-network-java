@@ -11,9 +11,11 @@ public class HttpHeaders {
 	// 定数
 	public static final String CONTENT_LENGTH = "Content-Length";
 	public static final String CONTENT_TYPE = "Content-Type";
+	public static final String CONTENT_ENCODING = "Content-Encoding";
 	public static final String ACCEPT = "Accept";
 	public static final String APPLICATION_JSON = "application/json";
 	public static final String APPLICATION_XML = "application/xml";
+	public static final String GZIP = "gzip";
 	
 	// ヘッダーのリスト
 	private final Map<String, HttpHeader> headers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
