@@ -1,0 +1,51 @@
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=UTF-8
+// Content-Lengthは省略してください。
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ようこそ</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .welcome-box {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.85);
+            padding: 30px 50px;
+            border-radius: 16px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .welcome-box h1 {
+            font-size: 3em;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .welcome-box i {
+            font-size: 4em;
+            color: #4a90e2;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-box">
+        <i class="fas fa-grin-wink"></i>
+        <h1>アプリケーション層演習へようこそ</h1>
+    </div>
+</body>
+</html>
