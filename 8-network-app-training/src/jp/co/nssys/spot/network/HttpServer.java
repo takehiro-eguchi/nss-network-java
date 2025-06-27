@@ -5,6 +5,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.Executors;
 
+import jp.co.nssys.spot.network.HttpRequestServlet.SampleXmlServlet;
+
 /**
  * HTTPサーバーの実装を提供します。
  * <p>
@@ -13,7 +15,7 @@ import java.util.concurrent.Executors;
  *
  */
 public class HttpServer {
-
+	
 	/**
 	 * HTTPサーバーのエントリポイントです。
 	 * <p>
@@ -27,6 +29,11 @@ public class HttpServer {
 		int backlog = 10;
 		var executor = Executors.newFixedThreadPool(backlog);
 		
+		// リクエストを処理するオブジェクトの生成
+		var consumer = new HttpRequestConsumer();
+		// 独自にサーブレットを登録する場合は、パスとサーブレットをマッピングする
+		consumer.addServlet("/xml", new SampleXmlServlet());
+		
 		// 受信を開始する
 		try (var serverSocket = new ServerSocket(port, backlog)) {
 			System.out.println("HTTPサーバーがポート " + port + " で起動しました。");
@@ -35,7 +42,7 @@ public class HttpServer {
 				final var acceptedSocket = serverSocket.accept();
 				
 				// 受付後はスレッドプールで処理
-				executor.execute(() -> handleSocket(acceptedSocket));
+				executor.execute(() -> handleSocket(consumer, acceptedSocket));
 			}
 		} catch (IOException e) {
 			throw new RuntimeException("HTTPサーバーの送受信に失敗しました。ポート: " + port, e);
@@ -47,7 +54,7 @@ public class HttpServer {
 	}
 		
 	// 受付ソケットの処理を行います。
-	private static void handleSocket(Socket socket) {
+	private static void handleSocket(HttpRequestConsumer consumer, Socket socket) {
 		try (
 				var reader = new HttpRequestReader(socket);
 				var writer = new HttpResponseWriter(socket)) {
@@ -59,7 +66,6 @@ public class HttpServer {
 			}
 			
 			// リクエストに基づいてレスポンスを生成する
-			var consumer = new HttpRequestConsumer();
 			var response = consumer.consume(request);
 			
 			// レスポンスを書き込む

@@ -27,10 +27,26 @@ public record HttpResponse(HttpResponseLine responseLine, HttpHeaders headers, b
 		headers.addHeader(name, String.valueOf(value));
 	}
 	
+	/** ヘッダーが存在するか確認します */
+	public boolean containsHeader(String name) {
+		return headers.containsHeader(name);
+	}
+	
+	/** OKのHTTPレスポンスを生成します */
+	public static HttpResponse ok() {
+		return ok(new byte[0]);
+	}
+	
 	/** OKのHTTPレスポンスを生成します */
 	public static HttpResponse ok(byte[] body) {
 		HttpResponseLine responseLine = new HttpResponseLine(HTTP_PROTOCOL, 200, "OK");
 		return new HttpResponse(responseLine, new HttpHeaders(), body);
+	}
+	
+	/** OKのHTTPレスポンスを生成します */
+	public static HttpResponse ok(String body) {
+		byte[] bodyBytes = body != null ? body.getBytes() : new byte[0];
+		return ok(bodyBytes);
 	}
 	
 	/** Not FoundのHTTPレスポンスを生成します */
