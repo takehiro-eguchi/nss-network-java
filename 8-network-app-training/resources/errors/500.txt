@@ -1,0 +1,39 @@
+HTTP/1.1 500 Internal Server Error
+Content-Type: text/html; charset=UTF-8
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>メンテナンス中</title>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            font-family: 'Segoe UI', sans-serif;
+            text-align: center;
+            padding: 100px;
+        }
+        h1 {
+            font-size: 48px;
+            color: #444;
+        }
+        p {
+            font-size: 20px;
+            color: #666;
+        }
+        .notice {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 40px;
+            display: inline-block;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="notice">
+        <h1>現在メンテナンス中です</h1>
+        <p>ご不便をおかけして申し訳ありません。<br>しばらくしてから再度アクセスしてください。</p>
+    </div>
+</body>
+</html>

@@ -18,6 +18,7 @@ public class HttpRequestConsumer {
 	
 	// 定数
 	private static final String RESOURCE_ROOT = "resources";
+	private static final String ERROR_PATH = "errors";
 
 	/**
 	 * HTTPリクエストを処理し、HTTPレスポンスを生成します。
@@ -29,20 +30,27 @@ public class HttpRequestConsumer {
 	 * @throws IllegalArgumentException リクエストがnullの場合にスローされます。
 	 */
 	public HttpResponse consume(HttpRequest request) throws FileNotFoundException, IOException, URISyntaxException {
-		if (request == null) {
-			throw new IllegalArgumentException("HttpRequest must not be null");
-		}
-		
-		// リソースパスより対象ファイルを読み込み
 		try {
-			var response = readResponse(request);
+			if (request == null) {
+				throw new IllegalArgumentException("HttpRequest must not be null");
+			}
 			
-			// レスポンスデータを補正する
-			return build(response);
-			
-		} catch (FileNotFoundException | NoSuchFileException e) {
-			// ファイルが見つからない場合は404 Not Foundを返す
-			return HttpResponse.notFound(e.getMessage());
+			// リソースパスより対象ファイルを読み込み
+			try {
+				var response = readResponse(request);
+				
+				// レスポンスデータを補正する
+				return build(response);
+				
+			} catch (FileNotFoundException | NoSuchFileException e) {
+				// ファイルが見つからない場合は404 Not Foundを返す
+				var notFoundResponse = readResponse(ERROR_PATH, "404");
+				return build(notFoundResponse);
+			} 
+		} catch (Exception e) {
+			// その他の例外は500 Internal Server Errorを返す
+			var errorResponse = readResponse(ERROR_PATH, "500");
+			return build(errorResponse);
 		}
 	}
 
@@ -53,19 +61,25 @@ public class HttpRequestConsumer {
 		var method = reqLine.method();
 		var path = reqLine.uri();
 		
+		// 委譲
+		return readResponse(path, method);
+	}
+	
+	/** リソースに合致するHTTPレスポンスを作成します */
+	private HttpResponse readResponse(String dirPath, String contentName) throws FileNotFoundException, IOException, URISyntaxException {
 		// icoファイルなどの静的コンテンツは内容をそのまま返す
-		var resourcePath = Paths.get(RESOURCE_ROOT + path);
-		if (path.endsWith(".ico")) {
+		var resourcePath = Paths.get(RESOURCE_ROOT + "/" + dirPath);
+		if (resourcePath.toString().endsWith(".ico")) {
 			return HttpResponse.ok(Files.readAllBytes(resourcePath));
 		}
 		
 		// コンテンツファイルの取得
 		var contentFile = Files.list(resourcePath)
 				.filter(file -> startsWithIgnoreCase(
-						file.getFileName().toString(), method))
+						file.getFileName().toString(), contentName))
 				.findFirst()
 				.orElseThrow(() -> new FileNotFoundException(
-						"File not found: Path = " + path + ", Method = " + method));
+						"File not found: Path = " + dirPath + ", Method = " + contentName));
 		
 		// 取得したファイルの内容を読み込み
 		try (
