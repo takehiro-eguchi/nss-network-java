@@ -29,3 +29,19 @@ GET /sample HTTP/1.1
 |---|---|---|
 |リクエストに紐づくディレクトリ、ファイルが存在しない|404(Not Found)|resources/errors/404.txt|
 |レスポンスの解析やその他のトラブルが発生|500(Internal Server Error)|resources/errors/500.txt||
+
+# 独自のサーブレットの追加について
+通常は配置したリソースに基づいてレスポンスが返却されますが、独自にサーブレットを追加したい場合はパスとサーブレットをセットで追加することができます。
+
+```java
+HttpRequestConsumer consumer = ...;
+// パスとサーブレットを追加
+consumer.addServlet(
+		"/hello", 
+		new HttpRequestServlet () {
+			@Override
+			public HttpResponse execute(HttpRequest request) throws Exception {
+				return HttpResponse.ok("Hello, World!");
+			}
+		});
+```
