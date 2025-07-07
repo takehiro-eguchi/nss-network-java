@@ -54,3 +54,57 @@ consumer.addServlet(
 ```
 
 主に動的なコンテンツやgzip圧縮したデータをレスポンスしたい場合に利用します。
+
+## コンテンツの変数埋め込みについて
+
+静的なコンテンツに対してテンプレート化し、一部項目を変数から置き換えることができます。
+以下のようなテンプレートコンテンツを用意します。
+テンプレートコンテンツは`コンテンツの配置方法`に則って配置してください。
+
+```html
+<div class="info">
+  <div class="label">名前:</div>
+  <div class="value">${username}</div>
+</div>
+<div class="info">
+  <div class="label">メールアドレス:</div>
+  <div class="value">${email}</div>
+</div>
+<div class="info">
+  <div class="label">メッセージ:</div>
+  <div class="value">${message}</div>
+</div>
+```
+
+`${}`内の変数をキーとしたMapを作成し、それを引数に渡してコンテンツを作成します。
+
+```java
+// リクエストオブジェクトを取得
+HttpRequest request = ...;
+
+// 埋め込み変数の作成
+var params = new HashMap<String, String>();
+params.put("username", "t-eguchi");
+params.put("email", "t-eguchi@xxx.xx.xx");
+params.put("message", "こんにちは！");
+
+// このMapを渡してレスポンスを作成
+HttpResponse response = resourceServlet.execute(request, params);
+```
+
+これにより、変数を置き換えたコンテンツが作成されます。
+
+```html
+<div class="info">
+  <div class="label">名前:</div>
+  <div class="value">t-eguchi</div>
+</div>
+<div class="info">
+  <div class="label">メールアドレス:</div>
+  <div class="value">t-eguchi@xxx.xx.xx</div>
+</div>
+<div class="info">
+  <div class="label">メッセージ:</div>
+  <div class="value">こんにちは！</div>
+</div>
+```
