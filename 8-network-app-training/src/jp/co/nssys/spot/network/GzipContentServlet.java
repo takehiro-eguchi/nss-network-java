@@ -17,12 +17,12 @@ public class GzipContentServlet implements HttpRequestServlet {
 
 	@Override
 	public HttpResponse execute(HttpRequest request) throws Exception {
-		String message = "Hello".repeat(1000);
+		// TODO: とても大きなコンテンツを作成する
 		String content = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-				+ "<message>\n"
-				+ "    <text>" + message + "</text>\n"
-				+ "</message>\n"
+				+ "....."
 				+ "";
+		
+		// GZIPストリームを使って圧縮する
 		var bytesOutputStream = new ByteArrayOutputStream();
 		try (var gzipOutputStream = new GZIPOutputStream(bytesOutputStream)) {
 			// 書き込み
@@ -34,9 +34,8 @@ public class GzipContentServlet implements HttpRequestServlet {
 		byte[] gzipContent = bytesOutputStream.toByteArray();
 		var response = HttpResponse.ok(gzipContent);
 		
-		// レスポンスヘッダーの設定
-		response.addHeader(HttpHeaders.CONTENT_TYPE, HttpHeaders.APPLICATION_XML);
-		response.addHeader(HttpHeaders.CONTENT_ENCODING, HttpHeaders.GZIP);
+		// TODO: レスポンスヘッダーを適切に設定
+//		response.addHeader(HttpHeaders.XXX, HttpHeaders.XXX);
 		
 		return response;
 	}

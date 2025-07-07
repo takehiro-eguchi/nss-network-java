@@ -23,19 +23,11 @@ public class PostContentServlet implements HttpRequestServlet {
 			throw new IllegalArgumentException("POSTリクエストのボディが空です。");
 		}
 		
-		// パラメタを分解
-		var params = new HashMap<String, String>();
-		var paramElements = bodyString.split("&");
-		for (String element : paramElements) {
-			var keyValue = element.split("=");
-			if (keyValue.length == 2) {
-				params.put(keyValue[0], keyValue[1]);
-			} else {
-				throw new IllegalArgumentException("POSTリクエストのパラメタが不正です: " + element);
-			}
-		}
+		// TODO パラメタを要素ごとに分解する
+		var params = new HashMap<String, String>();	// パラメタキーとパラメタ値のマッピング
 		
-		// レスポンスを生成
+		// TODO 変数を埋め込むことで、レスポンスを生成
+		// ここで全て動的に作成してしまっても良いです。
 		return resourceServlet.execute(request, params);
 	}
 }
